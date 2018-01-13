@@ -11,14 +11,14 @@ import stuyvision.gui.IntegerSliderVariable;
 
 
 public class Vision extends VisionModule{
-	public IntegerSliderVariable minHue = new IntegerSliderVariable("Min Hue", 0, 0, 255);
-	public IntegerSliderVariable maxHue = new IntegerSliderVariable("Max Hue", 255, 0, 255);
+	public IntegerSliderVariable minLightness = new IntegerSliderVariable("Min Lightness", 142, 0, 255);
+	public IntegerSliderVariable maxLightness = new IntegerSliderVariable("Max Lightness", 255, 0, 255);
 	
-	public IntegerSliderVariable minSaturation = new IntegerSliderVariable("Min Saturation", 0, 0, 255);
-	public IntegerSliderVariable maxSaturation = new IntegerSliderVariable("Max Saturation", 255, 0, 255);
+	public IntegerSliderVariable minA = new IntegerSliderVariable("Min A", 86, 0, 255);
+	public IntegerSliderVariable maxA = new IntegerSliderVariable("Max A", 132, 0, 255);
 	
-	public IntegerSliderVariable minValue = new IntegerSliderVariable("Min Value", 0, 0, 255);
-	public IntegerSliderVariable maxValue = new IntegerSliderVariable("Max Value", 255, 0, 255);
+	public IntegerSliderVariable minB = new IntegerSliderVariable("Min B", 157, 0, 225);
+	public IntegerSliderVariable maxB = new IntegerSliderVariable("Max B", 225, 0, 225);
 	
 	
 	public void run(Mat frame) {
@@ -33,17 +33,21 @@ public class Vision extends VisionModule{
 		}
 		
 		Mat filtered = new Mat();
-		Imgproc.cvtColor(frame, filtered, Imgproc.COLOR_BGR2HSV);
+		Imgproc.cvtColor(frame, filtered, Imgproc.COLOR_BGR2Lab);
 		
 		ArrayList<Mat> channels = new ArrayList<Mat>();
-		Core.split(frame, channels);
+		Core.split(filtered, channels);
+		
+		if (hasGuiApp()) {
+			postImage(filtered, "Lightness Before Change Frame");
+		}
 		
         Imgproc.medianBlur(channels.get(0), channels.get(0), 5);
         
-     // Filter channel by hue
-        Core.inRange(channels.get(0), new Scalar(minHue.value()), new Scalar(maxHue.value()), channels.get(0));
+        // Filter channel by lightness
+        Core.inRange(channels.get(0), new Scalar(minLightness.value()), new Scalar(maxLightness.value()), channels.get(0));
         if (hasGuiApp()) {
-            postImage(channels.get(0), "Hue-Filtered Frame");
+            postImage(channels.get(0), "Lightness-Filtered Frame");
         }
         
         // Dilate then erode
@@ -53,24 +57,30 @@ public class Vision extends VisionModule{
         Mat erodeKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
         Imgproc.erode(channels.get(0), channels.get(0), erodeKernel);
         
-        // Filter channel by Saturation
-        Core.inRange(channels.get(1), new Scalar(minSaturation.value()), new Scalar(maxSaturation.value()), channels.get(1));
+        // Filter channel by a
+        Core.inRange(channels.get(1), new Scalar(minA.value()), new Scalar(maxA.value()), channels.get(1));
         if (hasGuiApp()) {
-        		postImage(channels.get(1), "Saturation-Filtered Frame");
+        		postImage(channels.get(1), "A-Filtered Frame");
         }
         
-        // Filter channel Value
-        Core.inRange(channels.get(2), new Scalar(minValue.value()), new Scalar(maxValue.value()), channels.get(2));
+        // Filter channel b
+        Core.inRange(channels.get(2), new Scalar(minB.value()), new Scalar(maxB.value()), channels.get(2));
         if (hasGuiApp()) {
-        		postImage(channels.get(2), "Value-Filtered Frame");
+        		postImage(channels.get(2), "B-Filtered Frame");
         }
         
         // AND the three channels into channels.get(0)
-        Core.bitwise_and(channels.get(0), channels.get(1), channels.get(0));
-        Core.bitwise_and(channels.get(0), channels.get(2), channels.get(0));
+        Core.bitwise_and(channels.get(0), channels.get(1), filtered);
+        Core.bitwise_and(filtered, channels.get(2), filtered);
        
+        Mat dilateKernelF = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
+        Imgproc.dilate(filtered, filtered, dilateKernelF);
+
+        Mat erodeKernelF = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7, 7));
+        Imgproc.erode(filtered, filtered, erodeKernelF);
+
         if(hasGuiApp()) {
-        postImage(filtered, "Final HSV filtering");
+        postImage(filtered, "Final Lab filtering");
         }
 
 

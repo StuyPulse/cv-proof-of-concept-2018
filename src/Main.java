@@ -3,13 +3,15 @@ import java.io.File;
 import org.opencv.core.Mat;
 
 import stuyvision.ModuleRunner;
+import stuyvision.capture.DeviceCaptureSource;
 import stuyvision.capture.ImageCaptureSource;
 import stuyvision.gui.VisionGui;
 
 public class Main {
     public static void main(String[] args) {
         ModuleRunner runner = new ModuleRunner(5);
-        processImages(runner);
+        //processImages(runner);
+        processCamera(runner);
         VisionGui.begin(args, runner);
     }
     
@@ -43,6 +45,15 @@ public class Main {
                 v.run(frame);
                 runner.addMapping(img, v);
             }
+    }
+    
+    public static void processCamera(ModuleRunner runner) {
+    	DeviceCaptureSource camera = new DeviceCaptureSource(0);
+    	Mat frame = new Mat();
+    	camera.readFrame(frame);
+    	
+    	Vision v = new Vision();
+    	runner.addMapping(camera, v);
     }
     
 }
