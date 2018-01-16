@@ -34,7 +34,8 @@ public class Main {
         File[] imgs = getFiles(imagesDirectory);
         Mat frame = new Mat();
 
-        for (int i = 0; i < imgs.length && i < 5; i++) {
+        /*
+        for (int i = 0; i < imgs.length && i < 3; i++) {
             String path = System.getProperty("user.dir") + imagesDirectory + imgs[i].getName();
             System.out.println(imgs[i].getName() + " - " + path);
             Vision v = new Vision();
@@ -45,6 +46,15 @@ public class Main {
             v.run(frame);
             runner.addMapping(img, v);
         }
+        */
+        String path = System.getProperty("user.dir") + imagesDirectory + "row.png";
+        Vision v = new Vision();
+
+        ImageCaptureSource img = new ImageCaptureSource(path);
+        img.readFrame(frame);
+
+        v.run(frame);
+        runner.addMapping(img, v);
     }
 
     public static void processCamera(ModuleRunner runner) {
