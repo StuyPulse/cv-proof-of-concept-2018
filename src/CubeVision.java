@@ -4,8 +4,6 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -13,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import stuyvision.VisionModule;
 import stuyvision.gui.IntegerSliderVariable;
 
-public class Vision extends VisionModule {
+public class CubeVision extends VisionModule {
     public IntegerSliderVariable minLightness = new IntegerSliderVariable("Min Lightness", 120, 0, 255);
     public IntegerSliderVariable maxLightness = new IntegerSliderVariable("Max Lightness", 255, 0, 255);
 
