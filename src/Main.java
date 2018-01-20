@@ -8,11 +8,13 @@ import stuyvision.capture.ImageCaptureSource;
 import stuyvision.gui.VisionGui;
 
 public class Main {
+    // Configuring camera settings:
+    // $ /usr/bin/v4l2-ctl -d 1 -c brightness=100,contrast=100,saturation=125
     public static void main(String[] args) {
         ModuleRunner runner = new ModuleRunner(5);
         // processCubeImages(runner);
-        processLineImages(runner);
-        // processCamera(runner);
+        // processLineImages(runner);
+        processCamera(runner);
         VisionGui.begin(args, runner);
     }
 
@@ -35,7 +37,7 @@ public class Main {
         File[] imgs = getFiles(imagesDirectory);
         Mat frame = new Mat();
 
-        /* for (int i = 0; i < imgs.length && i < 3; i++) {
+        for (int i = 0; i < imgs.length && i < 3; i++) {
             String path = System.getProperty("user.dir") + imagesDirectory + imgs[i].getName();
             System.out.println(imgs[i].getName() + " - " + path);
             CubeVision v = new CubeVision();
@@ -45,7 +47,7 @@ public class Main {
 
             v.run(frame);
             runner.addMapping(img, v);
-        }*/
+        }
 
         String path = System.getProperty("user.dir") + imagesDirectory + "row.png";
         CubeVision v = new CubeVision();
@@ -80,7 +82,7 @@ public class Main {
     }
 
     public static void processCamera(ModuleRunner runner) {
-        DeviceCaptureSource camera = new DeviceCaptureSource(0);
+        DeviceCaptureSource camera = new DeviceCaptureSource(1);
         Mat frame = new Mat();
         camera.readFrame(frame);
 
